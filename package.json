@@ -1,0 +1,28 @@
+{
+  "name": "@operationmonkey/auth-service",
+  "version": "1.0.0",
+  "scripts": {
+    "husky:prepare": "husky install",
+    "lint": "eslint '**/*.{js,jsx,json,ts,tsx}' --quiet",
+    "test": "jest",
+    "test:tdd": "jest --watchAll"
+  },
+  "author": "Ville Koskela",
+  "license": "MIT",
+  "devDependencies": {
+    "@nestjs/testing": "9.3.9",
+    "@operationmonkey/commitlint-config-core": "1.0.0",
+    "@operationmonkey/eslint-config-core": "1.0.2",
+    "@operationmonkey/lint-staged-config-core": "1.0.0",
+    "@operationmonkey/node-jest-config-core": "1.0.0",
+    "@operationmonkey/prettier-config-core": "1.0.1",
+    "@operationmonkey/tsconfig-core": "1.0.5",
+    "husky": "8.0.3",
+    "standard-version": "9.5.0",
+    "typescript": "4.9.5"
+  },
+  "dependencies": {
+    "@nestjs/common": "9.3.9",
+    "@nestjs/core": "9.3.9"
+  }
+}

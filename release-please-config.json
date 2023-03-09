@@ -1,0 +1,19 @@
+{
+  "packages": {
+    "apps/api": {
+      "component": "auth-service-api"
+    },
+    "apps/web-ui": {
+      "component": "auth-service-web-ui"
+    }
+  },
+  "plugins": [
+    {
+      "type": "linked-versions",
+      "components": [
+        "auth-service-api",
+        "auth-service-web-ui"
+      ]
+    }
+  ]
+}

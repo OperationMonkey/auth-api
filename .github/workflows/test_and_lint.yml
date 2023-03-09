@@ -1,0 +1,8 @@
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-lint:
+    uses: OperationMonkey/shared-workflows/.github/workflows/test_and_lint.yml@main
+
