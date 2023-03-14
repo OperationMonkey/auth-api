@@ -2,19 +2,16 @@ import type { Migration } from "../../core/entities/migration";
 import type { MigrationsPort } from "../../core/ports/migrations.port";
 
 export class MigrationsAdapter implements MigrationsPort {
-  listAllMigrations(): Promise<Migration[]> {
+  getAllMigrations(): Promise<Migration[]> {
     throw new Error("Method not implemented.");
   }
-  listAllActive(): Promise<Migration[]> {
+  getIdsOfMigrated(): Promise<string[]> {
     throw new Error("Method not implemented.");
   }
-  listAllPending(): Promise<Migration[]> {
+  up(_id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
-  up(): Promise<boolean> {
-    throw new Error("Method not implemented.");
-  }
-  down(): Promise<boolean> {
+  down(_id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
 }
