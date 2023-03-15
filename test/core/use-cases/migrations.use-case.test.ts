@@ -1,13 +1,9 @@
 import { Test } from "@nestjs/testing";
 
-import { MigrationsPort } from "../ports/migrations.port";
-import { MockMigrationsPort } from "../ports/migrations.port.mock";
+import { MigrationsPort } from "../../../src/core/ports/migrations.port";
+import { MockMigrationsPort } from "../../../src/core/ports/migrations.port.mock";
 
-import { MigrationsUseCase } from "./migrations.use-case";
-
-/**
- * @todo move tests under /test to keep /src readable
- */
+import { MigrationsUseCase } from "../../../src/core/use-cases/migrations.use-case";
 
 describe("Migrations use-case", () => {
   let useCase: MigrationsUseCase;
