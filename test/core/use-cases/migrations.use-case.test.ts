@@ -1,9 +1,8 @@
 import { Test } from "@nestjs/testing";
 
 import { MigrationsPort } from "../../../src/core/ports/migrations.port";
-import { MockMigrationsPort } from "../../../src/core/ports/migrations.port.mock";
-
 import { MigrationsUseCase } from "../../../src/core/use-cases/migrations.use-case";
+import { MockMigrationsPort } from "../ports/migrations.port.mock";
 
 describe("Migrations use-case", () => {
   let useCase: MigrationsUseCase;
@@ -14,7 +13,7 @@ describe("Migrations use-case", () => {
         MigrationsUseCase,
         {
           provide: MigrationsPort,
-          useClass: MockMigrationsPort,
+          useValue: MockMigrationsPort,
         },
       ],
     }).compile();
@@ -24,5 +23,20 @@ describe("Migrations use-case", () => {
 
   it("should be defined", () => {
     expect(useCase).toBeDefined();
+  });
+
+  it("should sort by orderNumber", async () => {
+    jest.spyOn(MockMigrationsPort, "getAllMigrations").mockResolvedValueOnce([
+      { id: "3", orderNumber: 3, up: "third up", down: "third down" },
+      { id: "1", orderNumber: 1, up: "first up", down: "first down" },
+      { id: "2", orderNumber: 2, up: "second up", down: "second down" },
+    ]);
+    jest.spyOn(MockMigrationsPort, "getIdsOfMigrated").mockResolvedValueOnce(["1"]);
+    const result = await useCase.runAllMigrations();
+
+    expect(result).toEqual([
+      { id: "2", orderNumber: 2, up: "second up", down: "second down" },
+      { id: "3", orderNumber: 3, up: "third up", down: "third down" },
+    ]);
   });
 });

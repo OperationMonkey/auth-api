@@ -2,6 +2,7 @@ import { VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 
 import { AppModule } from "./app";
+import { ConfigPort } from "./core/ports/config.port";
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -10,8 +11,10 @@ async function bootstrap(): Promise<void> {
     type: VersioningType.URI,
   });
 
-  await app.listen(3000);
-  console.log("app started on port 3000");
+  const config = app.get<ConfigPort>(ConfigPort);
+
+  await app.listen(config.port);
+  console.log(`app started on port ${config.port}`);
 }
 
 void bootstrap();
