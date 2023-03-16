@@ -32,6 +32,9 @@ describe("Migrations use-case", () => {
     expect(useCase).toBeDefined();
   });
 
+  /**
+   * @todo fix this when usecase implementation progresses
+   */
   it("should sort by orderNumber", async () => {
     jest.spyOn(MockMigrationsPort, "getAllMigrations").mockResolvedValueOnce([
       { id: "3", orderNumber: 3, up: "third up", down: "third down" },
