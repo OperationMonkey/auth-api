@@ -1,7 +1,10 @@
 import { Test } from "@nestjs/testing";
 
+import { LoggerPort } from "../../../src/core/ports/logger.port";
+
 import { MigrationsPort } from "../../../src/core/ports/migrations.port";
 import { MigrationsUseCase } from "../../../src/core/use-cases/migrations.use-case";
+import { MockLoggerPort } from "../ports/logger.port.mock";
 import { MockMigrationsPort } from "../ports/migrations.port.mock";
 
 describe("Migrations use-case", () => {
@@ -11,6 +14,10 @@ describe("Migrations use-case", () => {
     const module = await Test.createTestingModule({
       providers: [
         MigrationsUseCase,
+        {
+          provide: LoggerPort,
+          useValue: MockLoggerPort,
+        },
         {
           provide: MigrationsPort,
           useValue: MockMigrationsPort,

@@ -1,5 +1,5 @@
 {
-  "name": "@operationmonkey/auth-service",
+  "name": "@operationmonkey/auth-api",
   "version": "1.0.0",
   "scripts": {
     "husky:prepare": "husky install",
@@ -11,11 +11,15 @@
   },
   "author": "Ville Koskela",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OperationMonkey/auth-api.git"
+  },
   "devDependencies": {
     "@nestjs/cli": "9.2.0",
     "@nestjs/testing": "9.3.10",
     "@operationmonkey/commitlint-config-core": "1.0.0",
-    "@operationmonkey/eslint-config-core": "1.0.2",
+    "@operationmonkey/eslint-config-core": "1.1.0",
     "@operationmonkey/lint-staged-config-core": "1.0.0",
     "@operationmonkey/node-jest-config-core": "1.0.1",
     "@operationmonkey/prettier-config-core": "1.0.1",
@@ -26,6 +30,7 @@
   },
   "dependencies": {
     "@nestjs/common": "9.3.10",
+    "@nestjs/config": "2.3.1",
     "@nestjs/core": "9.3.10",
     "@nestjs/platform-express": "9.3.10",
     "pg": "8.10.0"
