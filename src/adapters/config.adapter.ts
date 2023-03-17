@@ -15,4 +15,8 @@ export class ConfigAdapter implements ConfigPort {
   get port(): number {
     return this.configService.get("PORT");
   }
+
+  get databaseUrl(): string {
+    return this.configService.get("DATABASE_URL");
+  }
 }

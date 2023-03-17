@@ -9,9 +9,14 @@ import { ConfigPort } from "./core/ports/config.port";
 import { LoggerPort } from "./core/ports/logger.port";
 import { MigrationsPort } from "./core/ports/migrations.port";
 import { MigrationsUseCase } from "./core/use-cases/migrations.use-case";
+import { validateEnvironment } from "./utils/validate-environment";
 
 @Module({
-  imports: [ConfigModule.forRoot({})],
+  imports: [
+    ConfigModule.forRoot({
+      validate: validateEnvironment,
+    }),
+  ],
   controllers: [MigrationControllerV1],
   providers: [
     MigrationsUseCase,

@@ -16,8 +16,9 @@ export class MigrationsUseCase implements OnModuleInit {
    * @todo if no migrations in database,
    *       run all available migrations
    */
-  public onModuleInit(): void {
-    console.log("will check if database is empty and run all migrations");
+  public async onModuleInit(): Promise<void> {
+    this.logger.info("will check if database is empty and run all migrations");
+    await Promise.resolve();
   }
 
   public async runAllMigrations(): Promise<Array<Migration>> {
