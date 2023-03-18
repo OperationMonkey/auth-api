@@ -12,8 +12,6 @@ import type { Migration } from "../core/entities/migration";
 export class MigrationControllerV1 {
   @Get()
   public findAllV1(): Promise<Array<Migration>> {
-    return Promise.resolve([
-      { id: "1-2-3", up: "create table foo", down: "delete table", orderNumber: 1 },
-    ]);
+    return Promise.resolve([{ name: "name of migration", orderNumber: 1 }]);
   }
 }

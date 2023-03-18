@@ -23,10 +23,10 @@ export class MigrationsUseCase implements OnModuleInit {
 
   public async runAllMigrations(): Promise<Array<Migration>> {
     const allMigrations = await this.migrationsAdapter.getAllMigrations();
-    const allMigrated = await this.migrationsAdapter.getIdsOfMigrated();
+    const allMigrated = await this.migrationsAdapter.getOrderNumbersOfMigrated();
 
     const allPending = allMigrations
-      .filter((migration) => !allMigrated.includes(migration.id))
+      .filter((migration) => !allMigrated.includes(migration.orderNumber))
       .sort((a, b) => a.orderNumber - b.orderNumber);
 
     this.logger.info(allPending);

@@ -1,6 +1,4 @@
 export interface Migration {
-  id: string;
-  up: string;
-  down: string;
+  name: string;
   orderNumber: number;
 }

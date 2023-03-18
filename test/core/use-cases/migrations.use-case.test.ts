@@ -37,16 +37,16 @@ describe("Migrations use-case", () => {
    */
   it("should sort by orderNumber", async () => {
     jest.spyOn(MockMigrationsPort, "getAllMigrations").mockResolvedValueOnce([
-      { id: "3", orderNumber: 3, up: "third up", down: "third down" },
-      { id: "1", orderNumber: 1, up: "first up", down: "first down" },
-      { id: "2", orderNumber: 2, up: "second up", down: "second down" },
+      { name: "name3", orderNumber: 3 },
+      { name: "name1", orderNumber: 1 },
+      { name: "name2", orderNumber: 2 },
     ]);
-    jest.spyOn(MockMigrationsPort, "getIdsOfMigrated").mockResolvedValueOnce(["1"]);
+    jest.spyOn(MockMigrationsPort, "getOrderNumbersOfMigrated").mockResolvedValueOnce([1]);
     const result = await useCase.runAllMigrations();
 
     expect(result).toEqual([
-      { id: "2", orderNumber: 2, up: "second up", down: "second down" },
-      { id: "3", orderNumber: 3, up: "third up", down: "third down" },
+      { name: "name2", orderNumber: 2 },
+      { name: "name3", orderNumber: 3 },
     ]);
   });
 });

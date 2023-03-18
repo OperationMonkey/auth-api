@@ -4,7 +4,7 @@ export const MigrationsPort = Symbol("MigrationsPort");
 
 export interface MigrationsPort {
   getAllMigrations(): Promise<Array<Migration>>;
-  getIdsOfMigrated(): Promise<Array<string>>;
+  getOrderNumbersOfMigrated(): Promise<Array<number>>;
   up(id: string): Promise<boolean>;
   down(id: string): Promise<boolean>;
 }
