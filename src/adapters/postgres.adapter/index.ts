@@ -92,7 +92,12 @@ export class PostgresAdapter implements OnModuleInit, MigrationsPort {
    */
   private async prepareDatabase(): Promise<boolean> {
     const result = await this.runQuery(
-      "CREATE TABLE IF NOT EXISTS migrations (id VARCHAR(50) PRIMARY KEY, name VARCHAR(100) NOT NULL, order_number INT NOT NULL, created_on TIMESTAMP NOT NULL DEFAULT current_timestamp);"
+      "CREATE TABLE IF NOT EXISTS migrations (\
+        id VARCHAR(50) PRIMARY KEY,\
+        name VARCHAR(100) UNIQUE NOT NULL,\
+        order_number UNIQUE INT NOT NULL,\
+        created_on TIMESTAMP NOT NULL DEFAULT current_timestamp\
+        );"
     );
 
     if (!result) {
