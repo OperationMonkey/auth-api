@@ -17,24 +17,24 @@
     "url": "https://github.com/OperationMonkey/auth-api.git"
   },
   "devDependencies": {
-    "@nestjs/cli": "9.2.0",
-    "@nestjs/testing": "9.3.10",
+    "@nestjs/cli": "9.3.0",
+    "@nestjs/testing": "9.3.12",
     "@operationmonkey/commitlint-config-core": "1.0.0",
-    "@operationmonkey/eslint-config-core": "1.1.0",
-    "@operationmonkey/lint-staged-config-core": "1.0.0",
+    "@operationmonkey/eslint-config-core": "1.2.0",
+    "@operationmonkey/lint-staged-config-core": "1.1.0",
     "@operationmonkey/node-jest-config-core": "1.0.1",
     "@operationmonkey/prettier-config-core": "1.0.1",
     "@operationmonkey/tsconfig-core": "1.0.6",
     "@types/pg": "8.6.6",
     "husky": "8.0.3",
     "standard-version": "9.5.0",
-    "typescript": "4.9.5"
+    "typescript": "5.0.2"
   },
   "dependencies": {
-    "@nestjs/common": "9.3.10",
+    "@nestjs/common": "9.3.12",
     "@nestjs/config": "2.3.1",
-    "@nestjs/core": "9.3.10",
-    "@nestjs/platform-express": "9.3.10",
+    "@nestjs/core": "9.3.12",
+    "@nestjs/platform-express": "9.3.12",
     "pg": "8.10.0",
     "zod": "3.21.4"
   }
