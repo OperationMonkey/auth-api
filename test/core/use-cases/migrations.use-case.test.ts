@@ -1,5 +1,8 @@
 import { Test } from "@nestjs/testing";
 
+import { DatabaseException } from "../../../src/core/exceptions/database.error";
+import { MigrationException } from "../../../src/core/exceptions/migration.error";
+
 import { LoggerPort } from "../../../src/core/ports/logger.port";
 
 import { MigrationsPort } from "../../../src/core/ports/migrations.port";
@@ -29,6 +32,24 @@ describe("Migrations use-case", () => {
     jest.clearAllMocks();
   });
 
+  it("should fail", () => {
+    expect(true).toBe(false);
+  });
+
+  it("should return all migrations", async () => {
+    jest.spyOn(MockMigrationsPort, "getAllMigrations").mockResolvedValueOnce([
+      { name: "name4", orderNumber: 123 },
+      { name: "name8", orderNumber: 234 },
+    ]);
+
+    const result = await useCase.getAllMigrations();
+
+    expect(result).toEqual([
+      { name: "name4", orderNumber: 123 },
+      { name: "name8", orderNumber: 234 },
+    ]);
+  });
+
   it("should return all pending migrations", async () => {
     jest.spyOn(MockMigrationsPort, "getAllMigrations").mockResolvedValueOnce([
       { name: "name5", orderNumber: 153456 },
@@ -45,14 +66,22 @@ describe("Migrations use-case", () => {
     ]);
   });
 
-  /**
-   * @todo fix this test to be more specific
-   */
-  it("should re-throw errors if migration fails", async () => {
+  it("should re-throw errors if migration up fails", async () => {
     jest.spyOn(MockMigrationsPort, "up").mockImplementationOnce(() => {
-      throw new Error();
+      throw new DatabaseException("Database error");
     });
-    await expect(useCase.runSingleMigrationUp(666)).rejects.toThrow();
+    await expect(useCase.runSingleMigrationUp(666)).rejects.toEqual(
+      new DatabaseException("Database error")
+    );
+  });
+
+  it("should re-throw errors if migration down fails", async () => {
+    jest.spyOn(MockMigrationsPort, "down").mockImplementationOnce(() => {
+      throw new MigrationException("Migration not found");
+    });
+    await expect(useCase.runSingleMigrationDown(666)).rejects.toEqual(
+      new MigrationException("Migration not found")
+    );
   });
 
   it("should run all migrations by orderNumber", async () => {

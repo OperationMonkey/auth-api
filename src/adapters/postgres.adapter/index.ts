@@ -40,19 +40,20 @@ export class PostgresAdapter implements OnModuleInit, MigrationsPort {
   }
 
   public async getOrderNumbersOfMigrated(): Promise<number[]> {
+    /**
+     * @note this.runQuery throws DatabaseException on failure, we can pass it to Core
+     */
     const result = await this.runQuery("SELECT order_number FROM migrations");
     const schema = z.object({ order_number: z.number() });
 
     try {
-      if (result) {
-        return result.rows.map((row) => schema.parse(row).order_number);
-      }
+      return result.rows.map((row) => schema.parse(row).order_number);
     } catch (error) {
       this.logger.error(
         `${PostgresAdapter.name}::getOrderNumbersOfMigrated::failed-to-parse-results`
       );
+      throw new DatabaseException("Failed to parse data from database");
     }
-    throw new DatabaseException("Failed to fetch orderNumbers of migrated");
   }
 
   public async up(orderNumber: number): Promise<boolean> {
@@ -61,13 +62,9 @@ export class PostgresAdapter implements OnModuleInit, MigrationsPort {
     if (!migration) {
       throw new MigrationException(`could not find migration with number ${orderNumber}`);
     }
-    const result = await this.runQuery(migration.up);
+    await this.runQuery(migration.up);
 
-    if (result) {
-      return true;
-    }
-
-    return false;
+    return true;
   }
 
   public async down(orderNumber: number): Promise<boolean> {
@@ -76,13 +73,9 @@ export class PostgresAdapter implements OnModuleInit, MigrationsPort {
     if (!migration) {
       throw new MigrationException(`could not find migration with number ${orderNumber}`);
     }
-    const result = await this.runQuery(migration.down);
+    await this.runQuery(migration.down);
 
-    if (result) {
-      return true;
-    }
-
-    return false;
+    return true;
   }
 
   /**
@@ -90,36 +83,35 @@ export class PostgresAdapter implements OnModuleInit, MigrationsPort {
    * @throws DatabaseException on failure
    * @returns true on success
    */
-  private async prepareDatabase(): Promise<boolean> {
-    const result = await this.runQuery(
-      "CREATE TABLE IF NOT EXISTS migrations (\
+  private async prepareDatabase(): Promise<void> {
+    try {
+      await this.runQuery(
+        "CREATE TABLE IF NOT EXISTS migrations (\
         id VARCHAR(50) PRIMARY KEY,\
         name VARCHAR(100) UNIQUE NOT NULL,\
         order_number UNIQUE INT NOT NULL,\
         created_on TIMESTAMP NOT NULL DEFAULT current_timestamp\
         );"
-    );
-
-    if (!result) {
+      );
+    } catch {
       throw new DatabaseException("Error preparing migrations table");
     }
-
-    return true;
   }
 
   /**
    *
    * @param sql raw sql query
    * @param values values as an array for $1, $2, $3 etc. in the query
-   * @returns {QueryResult | undefined} result on success - undefined on failure
+   * @returns {QueryResult} result on success
+   * @throws {DatabaseException} on failure
    */
-  private async runQuery(sql: string, values?: Array<unknown>): Promise<QueryResult | undefined> {
+  private async runQuery(sql: string, values?: Array<unknown>): Promise<QueryResult> {
     try {
-      const result = this.pool.query(sql, values);
+      const result = await this.pool.query(sql, values);
 
-      return await result;
+      return result;
     } catch {
-      return;
+      throw new DatabaseException("Failed to run query");
     }
   }
 }

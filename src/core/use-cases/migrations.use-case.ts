@@ -2,8 +2,6 @@ import type { OnModuleInit } from "@nestjs/common";
 import { Inject, Injectable } from "@nestjs/common";
 
 import type { Migration } from "../entities/migration";
-
-import { MigrationException } from "../exceptions/migration.error";
 import { LoggerPort } from "../ports/logger.port";
 import { MigrationsPort } from "../ports/migrations.port";
 
@@ -51,14 +49,19 @@ export class MigrationsUseCase implements OnModuleInit {
     try {
       await this.migrationsAdapter.up(orderNumber);
     } catch (error) {
-      if (error instanceof MigrationException) {
-        this.logger.error(
-          `${MigrationsUseCase.name}::runAllMigrations()::failed-to-run-migration::${orderNumber}`
-        );
-        throw error;
-      }
       this.logger.error(
-        `${MigrationsUseCase.name}::runAllMigrations()::unknown-error::${orderNumber}`
+        `${MigrationsUseCase.name}::runSingleMigrationUp()::failed-to-run-migration::${orderNumber}`
+      );
+      throw error;
+    }
+  }
+
+  public async runSingleMigrationDown(orderNumber: number): Promise<void> {
+    try {
+      await this.migrationsAdapter.down(orderNumber);
+    } catch (error) {
+      this.logger.error(
+        `${MigrationsUseCase.name}::runSingleMigrationDown()::failed-to-run-migration::${orderNumber}`
       );
       throw error;
     }
