@@ -32,10 +32,6 @@ describe("Migrations use-case", () => {
     jest.clearAllMocks();
   });
 
-  it("should fail", () => {
-    expect(true).toBe(false);
-  });
-
   it("should return all migrations", async () => {
     jest.spyOn(MockMigrationsPort, "getAllMigrations").mockResolvedValueOnce([
       { name: "name4", orderNumber: 123 },
