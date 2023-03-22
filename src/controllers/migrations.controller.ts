@@ -1,6 +1,7 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, HttpCode, Inject } from "@nestjs/common";
 
 import type { Migration } from "../core/entities/migration";
+import { MigrationsUseCase } from "../core/use-cases/migrations.use-case";
 
 /**
  * @todo think if we should define version in function level
@@ -10,8 +11,23 @@ import type { Migration } from "../core/entities/migration";
   version: "1",
 })
 export class MigrationControllerV1 {
+  public constructor(
+    @Inject(MigrationsUseCase) private readonly migrationUseCase: MigrationsUseCase
+  ) {}
+
   @Get()
-  public findAllV1(): Promise<Array<Migration>> {
-    return Promise.resolve([{ name: "name of migration", orderNumber: 1 }]);
+  @HttpCode(200)
+  public async findAll(): Promise<Array<Migration>> {
+    const migrations = await this.migrationUseCase.getAllMigrations();
+
+    return migrations;
+  }
+
+  @Get("/pending")
+  @HttpCode(200)
+  public async findAllPending(): Promise<Array<Migration>> {
+    const migrations = await this.migrationUseCase.getAllPendingMigrations();
+
+    return migrations;
   }
 }

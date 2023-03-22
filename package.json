@@ -26,8 +26,10 @@
     "@operationmonkey/prettier-config-core": "1.0.1",
     "@operationmonkey/tsconfig-core": "1.0.6",
     "@types/pg": "8.6.6",
+    "@types/supertest": "2.0.12",
     "husky": "8.0.3",
     "standard-version": "9.5.0",
+    "supertest": "6.3.3",
     "typescript": "5.0.2"
   },
   "dependencies": {
