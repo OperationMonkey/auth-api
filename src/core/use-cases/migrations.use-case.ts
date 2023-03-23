@@ -13,12 +13,15 @@ export class MigrationsUseCase implements OnModuleInit {
   ) {}
 
   /**
-   * @todo if no migrations in database,
-   *       run all available migrations
+   * @note prepare database and run migrations if table empty
    */
   public async onModuleInit(): Promise<void> {
-    this.logger.info("will check if database is empty and run all migrations");
-    await this.runAllMigrations();
+    await this.migrationsAdapter.prepareDatabase();
+    const migrated = await this.migrationsAdapter.getOrderNumbersOfMigrated();
+
+    if (migrated.length === 0) {
+      await this.runAllMigrations();
+    }
   }
 
   public async getAllMigrations(): Promise<Array<Migration>> {

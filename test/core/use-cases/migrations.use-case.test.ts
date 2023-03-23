@@ -86,16 +86,16 @@ describe("Migrations use-case", () => {
       { name: "name1", orderNumber: 1 },
       { name: "name2", orderNumber: 2 },
     ]);
-    jest.spyOn(MockMigrationsPort, "getOrderNumbersOfMigrated").mockResolvedValueOnce([1]);
+    jest.spyOn(MockMigrationsPort, "getOrderNumbersOfMigrated").mockResolvedValueOnce([]);
     const mockUp = jest.spyOn(MockMigrationsPort, "up");
 
     await useCase.runAllMigrations();
 
-    expect(mockUp).toHaveBeenCalledTimes(2);
-    expect(mockUp.mock.calls).toEqual([[2], [3]]);
+    expect(mockUp).toHaveBeenCalledTimes(3);
+    expect(mockUp.mock.calls).toEqual([[1], [2], [3]]);
   });
 
-  it("should run all migrations from onModuleInit", async () => {
+  it("should run pending migrations only", async () => {
     jest.spyOn(MockMigrationsPort, "getAllMigrations").mockResolvedValueOnce([
       { name: "name7", orderNumber: 7000 },
       { name: "name5", orderNumber: 555 },
@@ -106,7 +106,7 @@ describe("Migrations use-case", () => {
     jest.spyOn(MockMigrationsPort, "getOrderNumbersOfMigrated").mockResolvedValueOnce([111, 344]);
     const mockUp = jest.spyOn(MockMigrationsPort, "up");
 
-    await useCase.onModuleInit();
+    await useCase.runAllMigrations();
 
     expect(mockUp).toHaveBeenCalledTimes(3);
     expect(mockUp.mock.calls).toEqual([[444], [555], [7000]]);

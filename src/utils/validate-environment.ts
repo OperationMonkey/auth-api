@@ -8,7 +8,6 @@ const environmentSchema = z.object({
 });
 
 export function validateEnvironment(config: Record<string, unknown>): EnvironmentVariables {
-  console.log(typeof environmentSchema);
   const result = environmentSchema.parse(config);
 
   return result;
