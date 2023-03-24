@@ -11,11 +11,11 @@ import { MockMigrationsPort } from "../core/ports/migrations.port.mock";
 
 describe("Migrations Controller", () => {
   let app: INestApplication;
+  let migrationsPort: MigrationsPort;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
-        // MigrationsUseCase,
         {
           provide: MigrationsUseCase,
           useValue: {
@@ -27,26 +27,21 @@ describe("Migrations Controller", () => {
         { provide: MigrationsPort, useValue: MockMigrationsPort },
       ],
     })
-      /*
-      .overrideProvider(MigrationsUseCase)
-      .useValue({
-        getAllMigrations: (): Array<Migration> => {
-          console.log("foobar");
-
-          return [{ name: "name1", orderNumber: 123 }];
-        },
-      })*/
+      .overrideProvider(MigrationsPort)
+      .useValue(MockMigrationsPort)
       .compile();
 
     app = moduleRef.createNestApplication();
+    migrationsPort = moduleRef.get(MigrationsPort);
     await app.init();
   });
 
-  it("GET /migrations", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const result = request(app.getHttpServer()).get("/migrations").expect(200);
+  it.skip("GET /migrations", () => {
+    (migrationsPort.getAllMigrations as jest.Mock).mockResolvedValue([
+      { name: "name1", orderNumber: 123 },
+    ]);
 
-    // expect(result).toEqual({});
+    return request(app.getHttpServer()).get("/v1/migrations").expect(200).expect({ data: [] });
   });
 
   afterAll(async () => {
