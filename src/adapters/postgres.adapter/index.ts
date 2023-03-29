@@ -1,3 +1,7 @@
+/**
+ * @todo remove this lint disable once methods implemented
+ */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Crypto from "crypto";
 
 import { Inject, Injectable } from "@nestjs/common";
@@ -6,16 +10,18 @@ import { Pool } from "pg";
 import { z } from "zod";
 
 import type { Migration } from "../../core/entities/migration";
+import type { User } from "../../core/entities/user";
 import { DatabaseException } from "../../core/exceptions/database.error";
 import { MigrationException } from "../../core/exceptions/migration.error";
 import { ConfigPort } from "../../core/ports/config.port";
 import { LoggerPort } from "../../core/ports/logger.port";
 import type { MigrationsPort } from "../../core/ports/migrations.port";
+import type { UsersPort } from "../../core/ports/users.port";
 
 import { migrations } from "./migrations";
 
 @Injectable()
-export class PostgresAdapter implements MigrationsPort {
+export class PostgresAdapter implements MigrationsPort, UsersPort {
   private readonly pool;
 
   public constructor(
@@ -25,6 +31,39 @@ export class PostgresAdapter implements MigrationsPort {
     this.pool = new Pool({
       connectionString: this.config.databaseUrl,
     });
+  }
+
+  /**
+   * @interface UsersPort is implemented here
+   */
+  public addUser(username: string, password: string, name: string, email: string): Promise<User> {
+    throw new Error("Method not implemented.");
+  }
+
+  public updateUser(
+    id: string,
+    username: string,
+    password: string,
+    name: string,
+    email: string
+  ): Promise<User> {
+    throw new Error("Method not implemented.");
+  }
+
+  public updatePassword(id: string, password: string): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  public findUserById(id: string): Promise<User> {
+    throw new Error("Method not implemented.");
+  }
+
+  public findUserByUsername(username: string): Promise<User> {
+    throw new Error("Method not implemented.");
+  }
+
+  public deleteUser(id: string): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 
   /**
