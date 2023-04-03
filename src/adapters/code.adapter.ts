@@ -12,7 +12,7 @@ export class CodeAdapter implements CodePort {
     )}`;
   }
 
-  public verifyCodeAgainstChallenge(codeVerifier: string, codeChallenge: string): boolean {
+  public verifyCodeAndCodeChallenge(codeVerifier: string, codeChallenge: string): boolean {
     const hash = this.base64Encode(createHash("sha256").update(codeVerifier).digest());
 
     return hash === codeChallenge ? true : false;

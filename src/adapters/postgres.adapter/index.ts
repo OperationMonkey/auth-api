@@ -17,6 +17,7 @@ import { ConfigPort } from "../../core/ports/config.port";
 import { LoggerPort } from "../../core/ports/logger.port";
 import type { MigrationsPort } from "../../core/ports/migrations.port";
 import type { UsersPort } from "../../core/ports/users.port";
+import { ValidatorPort } from "../../core/ports/validator.port";
 
 import { migrations } from "./migrations";
 
@@ -26,7 +27,8 @@ export class PostgresAdapter implements MigrationsPort, UsersPort {
 
   public constructor(
     @Inject(ConfigPort) private readonly config: ConfigPort,
-    @Inject(LoggerPort) private readonly logger: LoggerPort
+    @Inject(LoggerPort) private readonly logger: LoggerPort,
+    @Inject(ValidatorPort) private readonly validator: ValidatorPort
   ) {
     this.pool = new Pool({
       connectionString: this.config.databaseUrl,
@@ -36,8 +38,42 @@ export class PostgresAdapter implements MigrationsPort, UsersPort {
   /**
    * @interface UsersPort is implemented here
    */
-  public addUser(username: string, password: string, name: string, email: string): Promise<User> {
-    throw new Error("Method not implemented.");
+  public async addUser(
+    username: string,
+    password: string,
+    name: string,
+    email: string
+  ): Promise<User> {
+    try {
+      const sql =
+        "INSERT INTO accounts(id, username, password, name, email) \
+                   VALUES($1,$2,$3,$4,$5) RETURNING id, username, name, email, \
+                   admin, locked, deleted, created_on, modified_on";
+      const values = [Crypto.randomUUID(), username, password, name, email];
+      const result = await this.runQuery(sql, values);
+
+      if (this.validator.isValidUser(result.rows[0])) {
+        return {
+          id: result.rows[0].id,
+          username: result.rows[0].username,
+          name: result.rows[0].name,
+          email: result.rows[0].email,
+          admin: result.rows[0].admin,
+          locked: result.rows[0].locked,
+          deleted: result.rows[0].deleted,
+          createdOn: result.rows[0].created_on,
+          modifiedOn: result.rows[0].modified_on,
+        };
+      } else {
+        throw new DatabaseException("invalid query result");
+      }
+    } catch (error) {
+      if (error instanceof DatabaseException) {
+        throw error;
+      } else {
+        throw new DatabaseException("Query gave incorrect result");
+      }
+    }
   }
 
   public updateUser(

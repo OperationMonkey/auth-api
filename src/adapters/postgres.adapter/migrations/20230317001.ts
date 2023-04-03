@@ -13,6 +13,7 @@ export const migration: PostgresMigration = {
     locked BOOLEAN NOT NULL DEFAULT FALSE,\
     deleted BOOLEAN NOT NULL DEFAULT FALSE,\
     created_on TIMESTAMP NOT NULL DEFAULT current_timestamp\
+    modified_on TIMESTAMP NOT NULL DEFAULT current_timestamp\
     );",
   down: "DROP TABLE IF EXISTS accounts",
 };
