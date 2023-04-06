@@ -2,22 +2,22 @@ import type { OnModuleInit } from "@nestjs/common";
 import { Inject, Injectable } from "@nestjs/common";
 
 import type { Migration } from "../entities/migration";
+import { DatabasePort } from "../ports/database.port";
 import { LoggerPort } from "../ports/logger.port";
-import { MigrationsPort } from "../ports/migrations.port";
 
 @Injectable()
 export class MigrationsUseCase implements OnModuleInit {
   public constructor(
     @Inject(LoggerPort) private readonly logger: LoggerPort,
-    @Inject(MigrationsPort) private readonly migrationsAdapter: MigrationsPort
+    @Inject(DatabasePort) private readonly databaseAdapter: DatabasePort
   ) {}
 
   /**
    * @note prepare database and run migrations if table empty
    */
   public async onModuleInit(): Promise<void> {
-    await this.migrationsAdapter.prepareDatabase();
-    const migrated = await this.migrationsAdapter.getOrderNumbersOfMigrated();
+    await this.databaseAdapter.migrations.prepareDatabase();
+    const migrated = await this.databaseAdapter.migrations.getOrderNumbersOfMigrated();
 
     if (migrated.length === 0) {
       await this.runAllMigrations();
@@ -25,12 +25,12 @@ export class MigrationsUseCase implements OnModuleInit {
   }
 
   public async getAllMigrations(): Promise<Array<Migration>> {
-    return this.migrationsAdapter.getAllMigrations();
+    return this.databaseAdapter.migrations.getAllMigrations();
   }
 
   public async getAllPendingMigrations(): Promise<Array<Migration>> {
-    const allMigrations = await this.migrationsAdapter.getAllMigrations();
-    const allMigrated = await this.migrationsAdapter.getOrderNumbersOfMigrated();
+    const allMigrations = await this.databaseAdapter.migrations.getAllMigrations();
+    const allMigrated = await this.databaseAdapter.migrations.getOrderNumbersOfMigrated();
 
     const allPending = allMigrations
       .filter((migration) => !allMigrated.includes(migration.orderNumber))
@@ -50,7 +50,7 @@ export class MigrationsUseCase implements OnModuleInit {
 
   public async runSingleMigrationUp(orderNumber: number): Promise<void> {
     try {
-      await this.migrationsAdapter.up(orderNumber);
+      await this.databaseAdapter.migrations.up(orderNumber);
     } catch (error) {
       this.logger.error(
         `${MigrationsUseCase.name}::runSingleMigrationUp()::failed-to-run-migration::${orderNumber}`
@@ -61,7 +61,7 @@ export class MigrationsUseCase implements OnModuleInit {
 
   public async runSingleMigrationDown(orderNumber: number): Promise<void> {
     try {
-      await this.migrationsAdapter.down(orderNumber);
+      await this.databaseAdapter.migrations.down(orderNumber);
     } catch (error) {
       this.logger.error(
         `${MigrationsUseCase.name}::runSingleMigrationDown()::failed-to-run-migration::${orderNumber}`

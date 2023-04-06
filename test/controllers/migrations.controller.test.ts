@@ -3,15 +3,15 @@ import { Test } from "@nestjs/testing";
 import request from "supertest";
 
 import type { Migration } from "../../src/core/entities/migration";
+import { DatabasePort } from "../../src/core/ports/database.port";
 import { LoggerPort } from "../../src/core/ports/logger.port";
-import { MigrationsPort } from "../../src/core/ports/migrations.port";
 import { MigrationsUseCase } from "../../src/core/use-cases/migrations.use-case";
 import { MockLoggerPort } from "../core/ports/logger.port.mock";
-import { MockMigrationsPort } from "../core/ports/migrations.port.mock";
+import { MockDatabasePort } from "../core/ports/migrations.port.mock";
 
 describe("Migrations Controller", () => {
   let app: INestApplication;
-  let migrationsPort: MigrationsPort;
+  let databasePort: DatabasePort;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -24,20 +24,20 @@ describe("Migrations Controller", () => {
           },
         },
         { provide: LoggerPort, useValue: MockLoggerPort },
-        { provide: MigrationsPort, useValue: MockMigrationsPort },
+        { provide: DatabasePort, useValue: MockDatabasePort },
       ],
     })
-      .overrideProvider(MigrationsPort)
-      .useValue(MockMigrationsPort)
+      .overrideProvider(DatabasePort)
+      .useValue(MockDatabasePort)
       .compile();
 
     app = moduleRef.createNestApplication();
-    migrationsPort = moduleRef.get(MigrationsPort);
+    databasePort = moduleRef.get(DatabasePort);
     await app.init();
   });
 
   it.skip("GET /migrations", () => {
-    (migrationsPort.getAllMigrations as jest.Mock).mockResolvedValue([
+    (databasePort.migrations.getAllMigrations as jest.Mock).mockResolvedValue([
       { name: "name1", orderNumber: 123 },
     ]);
 
