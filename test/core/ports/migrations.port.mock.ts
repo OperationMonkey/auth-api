@@ -12,8 +12,8 @@ export const MockDatabasePort: DatabasePort = {
     addUser: jest.fn(),
     updateUser: jest.fn(),
     updatePassword: jest.fn(),
-    findUserById: jest.fn(),
-    findUserByUsername: jest.fn(),
+    getUserById: jest.fn(),
+    getUserAndPasswordByUsername: jest.fn(),
     deleteUser: jest.fn(),
   },
 };

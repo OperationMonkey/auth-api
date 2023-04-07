@@ -9,3 +9,7 @@ export interface User {
   createdOn: Date;
   modifiedOn: Date;
 }
+
+export interface UserWithPassword extends User {
+  password: string;
+}

@@ -1,5 +1,5 @@
 import type { Migration } from "../entities/migration";
-import type { User } from "../entities/user";
+import type { User, UserWithPassword } from "../entities/user";
 
 export const DatabasePort = Symbol("DatabasePort");
 
@@ -21,8 +21,8 @@ export interface UsersPort {
     email: string
   ): Promise<User>;
   updatePassword(id: string, password: string): Promise<void>;
-  findUserById(id: string): Promise<User>;
-  findUserByUsername(username: string): Promise<User>;
+  getUserById(id: string): Promise<User>;
+  getUserAndPasswordByUsername(username: string): Promise<UserWithPassword>;
   deleteUser(id: string): Promise<void>;
 }
 

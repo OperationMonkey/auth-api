@@ -4,11 +4,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import * as Crypto from "crypto";
 
-import type { User } from "../../core/entities/user";
+import type { User, UserWithPassword } from "../../core/entities/user";
 import { DatabaseException } from "../../core/exceptions/database.error";
 import type { UsersPort } from "../../core/ports/database.port";
 
-import { parseUser } from "./validators";
+import { parseUser, parseUserWithPassword } from "./validators";
 
 import type { PostgresAdapter } from ".";
 
@@ -60,12 +60,38 @@ export class UsersAdapter implements UsersPort {
     throw new Error("Method not implemented.");
   }
 
-  public findUserById(id: string): Promise<User> {
-    throw new Error("Method not implemented.");
+  public async getUserById(id: string): Promise<User> {
+    try {
+      const sql =
+        "SELECT id, username, name, email, admin, locked, deleted, created_on, modified_on FROM accounts WHERE id = $1";
+      const values = [id];
+      const result = await this.postgresAdapter.__runQuery(sql, values);
+
+      return parseUser(result.rows[0]);
+    } catch (error) {
+      if (error instanceof DatabaseException) {
+        throw error;
+      } else {
+        throw new DatabaseException("Query gave incorrect result");
+      }
+    }
   }
 
-  public findUserByUsername(username: string): Promise<User> {
-    throw new Error("Method not implemented.");
+  public async getUserAndPasswordByUsername(username: string): Promise<UserWithPassword> {
+    try {
+      const sql =
+        "SELECT id, username, password, name, email, admin, locked, deleted, created_on, modified_on FROM accounts WHERE username = $1";
+      const values = [username];
+      const result = await this.postgresAdapter.__runQuery(sql, values);
+
+      return parseUserWithPassword(result.rows[0]);
+    } catch (error) {
+      if (error instanceof DatabaseException) {
+        throw error;
+      } else {
+        throw new DatabaseException("Query gave incorrect result");
+      }
+    }
   }
 
   public deleteUser(id: string): Promise<void> {
