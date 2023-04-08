@@ -44,11 +44,31 @@ export class MigrationsUseCase implements OnModuleInit {
 
     // eslint-disable-next-line fp/no-loops
     for await (const migration of allPending) {
-      await this.runSingleMigrationUp(migration.orderNumber);
+      await this.runMigrationUpByOrderNumber(migration.orderNumber);
     }
   }
 
-  public async runSingleMigrationUp(orderNumber: number): Promise<void> {
+  public async runSingleMigrationUp(): Promise<void> {
+    const nextMigration = await this.findNextMigration();
+
+    if (!nextMigration) {
+      return;
+    }
+
+    await this.runMigrationUpByOrderNumber(nextMigration.orderNumber);
+  }
+
+  public async runSingleMigrationDown(): Promise<void> {
+    const lastMigration = await this.findLastMigration();
+
+    if (!lastMigration) {
+      return;
+    }
+
+    await this.runMigrationDownByOrderNumber(lastMigration);
+  }
+
+  private async runMigrationUpByOrderNumber(orderNumber: number): Promise<void> {
     try {
       await this.databaseAdapter.migrations.up(orderNumber);
     } catch (error) {
@@ -59,7 +79,7 @@ export class MigrationsUseCase implements OnModuleInit {
     }
   }
 
-  public async runSingleMigrationDown(orderNumber: number): Promise<void> {
+  private async runMigrationDownByOrderNumber(orderNumber: number): Promise<void> {
     try {
       await this.databaseAdapter.migrations.down(orderNumber);
     } catch (error) {
@@ -67,6 +87,44 @@ export class MigrationsUseCase implements OnModuleInit {
         `${MigrationsUseCase.name}::runSingleMigrationDown()::failed-to-run-migration::${orderNumber}`
       );
       throw error;
+    }
+  }
+
+  private async findNextMigration(): Promise<Migration | undefined> {
+    try {
+      const migrations = await this.getAllPendingMigrations();
+
+      if (!migrations[0]) {
+        return undefined;
+      }
+
+      return migrations.reduce((prev, curr) => {
+        return prev.orderNumber > curr.orderNumber ? curr : prev;
+      }, migrations[0]);
+    } catch (error) {
+      this.logger.error(
+        `${MigrationsUseCase.name}::findNextMigration()::error-getting-all-pending`
+      );
+
+      return undefined;
+    }
+  }
+
+  private async findLastMigration(): Promise<number | undefined> {
+    try {
+      const migrations = await this.databaseAdapter.migrations.getOrderNumbersOfMigrated();
+
+      if (!migrations[0]) {
+        return undefined;
+      }
+
+      return migrations.reduce((prev, curr) => Math.max(prev, curr), migrations[0]);
+    } catch (error) {
+      this.logger.error(
+        `${MigrationsUseCase.name}::findLastMigration()::error-getting-numbers-of-migrated`
+      );
+
+      return undefined;
     }
   }
 }
