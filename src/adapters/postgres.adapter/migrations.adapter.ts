@@ -57,7 +57,7 @@ export class MigrationsAdapter implements MigrationsPort {
       await this.postgresAdapter.__runQuery("COMMIT");
     } catch (error) {
       await this.postgresAdapter.__runQuery("ROLLBACK");
-      throw error;
+      throw new DatabaseException("Failed to run migration up");
     }
 
     return true;
@@ -69,7 +69,25 @@ export class MigrationsAdapter implements MigrationsPort {
     if (!migration) {
       throw new MigrationException(`could not find migration with number ${orderNumber}`);
     }
-    await this.postgresAdapter.__runQuery(migration.down);
+    try {
+      const result = await this.postgresAdapter.__runQuery(
+        "SELECT id, order_number FROM migrations WHERE order_number = $1",
+        [orderNumber]
+      );
+      /**
+       * @todo fix this
+       */
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+      const id = result.rows[0].id;
+
+      await this.postgresAdapter.__runQuery("BEGIN");
+      await this.postgresAdapter.__runQuery(migration.down);
+      await this.postgresAdapter.__runQuery("DELETE FROM migrations WHERE id = $1", [id]);
+      await this.postgresAdapter.__runQuery("COMMIT");
+    } catch (error) {
+      await this.postgresAdapter.__runQuery("ROLLBACK");
+      throw new DatabaseException("Failed to run migration down");
+    }
 
     return true;
   }

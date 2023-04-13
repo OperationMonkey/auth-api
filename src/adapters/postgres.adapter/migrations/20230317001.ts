@@ -8,7 +8,7 @@ export const migration: PostgresMigration = {
     username VARCHAR(50) UNIQUE NOT NULL,\
     password VARCHAR(100) NOT NULL,\
     name VARCHAR(100) NOT NULL,\
-    email VARCHAR(100) NOT NULL,\
+    email VARCHAR(100) UNIQUE NOT NULL,\
     admin BOOLEAN NOT NULL DEFAULT FALSE,\
     locked BOOLEAN NOT NULL DEFAULT FALSE,\
     deleted BOOLEAN NOT NULL DEFAULT FALSE,\

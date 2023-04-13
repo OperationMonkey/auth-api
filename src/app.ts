@@ -13,6 +13,7 @@ import { DatabasePort } from "./core/ports/database.port";
 import { LoggerPort } from "./core/ports/logger.port";
 import { PasswordPort } from "./core/ports/password.port";
 import { MigrationsUseCase } from "./core/use-cases/migrations.use-case";
+import { RegisterNewUserUseCase } from "./core/use-cases/register-new-user.use-case";
 import { validateEnvironment } from "./utils/validate-environment";
 
 @Module({
@@ -44,6 +45,7 @@ import { validateEnvironment } from "./utils/validate-environment";
       provide: PasswordPort,
       useClass: PasswordAdapter,
     },
+    RegisterNewUserUseCase,
   ],
 })
 export class AppModule {}
