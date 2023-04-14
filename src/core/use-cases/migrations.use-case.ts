@@ -25,7 +25,9 @@ export class MigrationsUseCase implements OnModuleInit {
   }
 
   public async getAllMigrations(): Promise<Array<Migration>> {
-    return this.databaseAdapter.migrations.getAllMigrations();
+    const migrations = await this.databaseAdapter.migrations.getAllMigrations();
+
+    return migrations;
   }
 
   public async getAllPendingMigrations(): Promise<Array<Migration>> {
