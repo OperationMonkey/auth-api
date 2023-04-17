@@ -1,7 +1,6 @@
-/**
- * @todo fix this
- */
-// eslint-disable-next-line import/no-unused-modules
-export function objectHasKey<T>(obj: T, key: PropertyKey): key is keyof T {
+export function objectHasKey<T = unknown, U extends string = string>(
+  obj: object,
+  key: U
+): obj is { [key in U]: T } {
   return Object.prototype.hasOwnProperty.call(obj, key);
 }

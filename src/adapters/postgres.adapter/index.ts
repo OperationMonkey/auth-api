@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { QueryResult } from "pg";
+import type { QueryArrayResult } from "pg";
 import { Pool } from "pg";
 
 import { DatabaseException } from "../../core/exceptions/database.error";
@@ -30,9 +30,12 @@ export class PostgresAdapter implements DatabasePort {
    * @returns {QueryResult} result on success
    * @throws {DatabaseException} on failure
    */
-  public async __runQuery(sql: string, values: Array<unknown> = []): Promise<QueryResult> {
+  public async __runQuery<T>(
+    sql: string,
+    values: Array<unknown> = []
+  ): Promise<QueryArrayResult<Array<T>>> {
     try {
-      const result = await this.pool.query(sql, values);
+      const result = await this.pool.query<Array<T>>(sql, values);
 
       return result;
     } catch {

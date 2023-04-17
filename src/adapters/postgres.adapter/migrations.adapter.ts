@@ -7,6 +7,8 @@ import { DatabaseException } from "../../core/exceptions/database.error";
 import { MigrationException } from "../../core/exceptions/migration.error";
 import type { MigrationsPort } from "../../core/ports/database.port";
 
+import { objectHasKey } from "../../utils/validate-object";
+
 import { migrations } from "./migrations";
 
 import type { PostgresAdapter } from ".";
@@ -74,11 +76,18 @@ export class MigrationsAdapter implements MigrationsPort {
         "SELECT id, order_number FROM migrations WHERE order_number = $1",
         [orderNumber]
       );
+
       /**
-       * @todo fix this
+       * @note this could be put in a helper called 'resultHasId()' to be more readable
        */
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-      const id = result.rows[0].id;
+      if (
+        !result.rows[0] ||
+        typeof result.rows[0] === "object" ||
+        !objectHasKey(result.rows[0], "id")
+      ) {
+        throw new DatabaseException("No such migration found from database");
+      }
+      const id = result.rows[0]["id"];
 
       await this.postgresAdapter.__runQuery("BEGIN");
       await this.postgresAdapter.__runQuery(migration.down);
