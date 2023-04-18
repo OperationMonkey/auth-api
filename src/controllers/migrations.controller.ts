@@ -3,9 +3,6 @@ import { Controller, Get, HttpCode, Inject } from "@nestjs/common";
 import type { Migration } from "../core/entities/migration";
 import { MigrationsUseCase } from "../core/use-cases/migrations.use-case";
 
-/**
- * @todo think if we should define version in function level
- */
 @Controller({
   path: "migrations",
   version: "1",

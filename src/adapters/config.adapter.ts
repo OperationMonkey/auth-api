@@ -19,4 +19,8 @@ export class ConfigAdapter implements ConfigPort {
   get databaseUrl(): string {
     return this.configService.get("DATABASE_URL");
   }
+
+  get tokenSecret(): string {
+    return this.configService.get("TOKEN_SECRET");
+  }
 }

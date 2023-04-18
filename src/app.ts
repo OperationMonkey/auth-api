@@ -1,3 +1,4 @@
+import type { MiddlewareConsumer, NestModule } from "@nestjs/common";
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
@@ -6,7 +7,10 @@ import { ConfigAdapter } from "./adapters/config.adapter";
 import { LoggerAdapter } from "./adapters/logger.adapter";
 import { PasswordAdapter } from "./adapters/password.adapter";
 import { PostgresAdapter } from "./adapters/postgres.adapter";
+import { AuthorizeAdmin } from "./controllers/middleware/authorize-admin";
+import { AuthorizeUser } from "./controllers/middleware/authorize-user";
 import { MigrationControllerV1 } from "./controllers/migrations.controller";
+import { UserControllerV1 } from "./controllers/users.controller";
 import { CodePort } from "./core/ports/code.port";
 import { ConfigPort } from "./core/ports/config.port";
 import { DatabasePort } from "./core/ports/database.port";
@@ -22,7 +26,7 @@ import { validateEnvironment } from "./utils/validate-environment";
       validate: validateEnvironment,
     }),
   ],
-  controllers: [MigrationControllerV1],
+  controllers: [MigrationControllerV1, UserControllerV1],
   providers: [
     MigrationsUseCase,
     {
@@ -48,4 +52,12 @@ import { validateEnvironment } from "./utils/validate-environment";
     RegisterNewUserUseCase,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  public configure(consumer: MiddlewareConsumer): void {
+    consumer
+      .apply(AuthorizeAdmin)
+      .forRoutes("/v1/migrations")
+      .apply(AuthorizeUser)
+      .forRoutes("/v1/users");
+  }
+}

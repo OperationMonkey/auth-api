@@ -27,6 +27,7 @@
     "@operationmonkey/tsconfig-core": "1.0.6",
     "@types/bcrypt": "5.0.0",
     "@types/express": "4.17.17",
+    "@types/jsonwebtoken": "9.0.1",
     "@types/pg": "8.6.6",
     "@types/supertest": "2.0.12",
     "husky": "8.0.3",
@@ -40,6 +41,7 @@
     "@nestjs/core": "9.3.12",
     "@nestjs/platform-express": "9.3.12",
     "bcrypt": "5.1.0",
+    "jsonwebtoken": "9.0.0",
     "pg": "8.10.0",
     "zod": "3.21.4"
   }
